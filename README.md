@@ -58,17 +58,21 @@ changes.
 python -m http.server 8000   # then open http://localhost:8000
 ```
 
-## Deploy (not wired yet)
+## Deploy
 
-Intended: GitHub Pages via Actions on push to `main`, custom domain
-`structuredwandering.com` (CNAME present). **Domain not yet registered / DNS not
-cut over** — this is a local scaffold. Before going live: register the domain,
-add the GitHub remote + Pages workflow, and set the real GA4 property id
-(currently a `G-XXXXXXXXXX` placeholder in `build_articles.py`).
+GitHub Pages via Actions (`.github/workflows/deploy.yml`) on push to `main`,
+publishing the repo root. Custom domain `structuredwandering.com` (registered at
+Dynadot 2026-07-12, CNAME present, apex A-records → GitHub Pages
+185.199.108–111.153, `www` CNAME → `jacovanderlaan.github.io`).
+
+`build_articles.py` / `build_books.py` run locally before commit — no host-side
+build. Still TODO: set the real GA4 property id (currently a `G-XXXXXXXXXX`
+placeholder in the builders).
 
 ## Status
 
-🚧 **Scaffold — pre-launch.** Landing page + article pipeline are in place and the
-build runs green with zero articles. No domain, no remote, no analytics yet.
-See the decision record in the vault:
+🟢 **Live** at https://structuredwandering.com (HTTPS enforced once GitHub's cert
+provisions). Landing page + curated-sources + article/book pipelines in place;
+0 articles and 0 books published yet (travel books in `W:/travel/books/` are
+scaffolds awaiting content). See the vault decision record:
 `D:/vault/calendar/2026/Q3/07 - Jul/.../decision_deliberate-interest-sites-domains.md`.

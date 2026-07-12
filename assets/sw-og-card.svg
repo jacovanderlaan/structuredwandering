@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Structured Wandering — deliberate travel, curated by a system not a feed">
+  <rect width="1200" height="630" fill="#0f2b2b"/>
+  <!-- faint structure grid -->
+  <g stroke="#0d7d7d" stroke-width="1.5" opacity="0.18">
+    <line x1="150" y1="0" x2="150" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="650" y1="0" x2="650" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+    <line x1="1050" y1="0" x2="1050" y2="630"/>
+  </g>
+  <!-- wandering path -->
+  <path d="M90 470 C 260 330, 360 430, 520 300 S 820 240, 1110 320"
+        fill="none" stroke="#b88a1b" stroke-width="6" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="1110" cy="320" r="9" fill="#b88a1b"/>
+  <text x="90" y="230" font-family="Inter, Segoe UI, sans-serif" font-size="30" letter-spacing="4" fill="#0d7d7d" font-weight="600">DELIBERATE TRAVEL, CURATED BY A SYSTEM NOT A FEED</text>
+  <text x="90" y="330" font-family="Inter, Segoe UI, sans-serif" font-size="82" fill="#ffffff" font-weight="700">Structured Wandering</text>
+  <text x="90" y="405" font-family="Inter, Segoe UI, sans-serif" font-size="34" fill="#bcd6d3">Structure + Taste + Sources → Journeys worth taking</text>
+</svg>

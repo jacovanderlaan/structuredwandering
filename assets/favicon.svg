@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Structured Wandering">
+  <rect width="64" height="64" rx="14" fill="#0f2b2b"/>
+  <!-- structured grid (the "structure") -->
+  <g stroke="#0d7d7d" stroke-width="2.4" opacity="0.55">
+    <line x1="16" y1="12" x2="16" y2="52"/>
+    <line x1="32" y1="12" x2="32" y2="52"/>
+    <line x1="48" y1="12" x2="48" y2="52"/>
+  </g>
+  <!-- the wandering path (the "wandering"), gold payoff -->
+  <path d="M12 46 C 20 30, 24 40, 32 26 S 44 20, 52 30"
+        fill="none" stroke="#b88a1b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- destination point -->
+  <circle cx="52" cy="30" r="4.2" fill="#b88a1b"/>
+</svg>

@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# brain export artifact (ADR-085 phase 3 decides how it travels)
+curated/content.json

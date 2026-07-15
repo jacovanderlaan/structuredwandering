@@ -105,6 +105,13 @@ mapping, otherwise it falls back to the venue's own site. Never a fabricated URL
 **Publish gate** (mirrors ADR-068 §1b): a destination renders only with a real
 body + venues + a header image; anything else is held back with a printed reason.
 
+⚠️ **Photos are copied, not linked.** The brain references images by root-relative
+path (`/photos/…`) and the files live in `travelbrain/site/public/` — its Astro
+site serves them from there, **this repo must hold its own copy**. `build_curated.py`
+copies them in (`SW_PHOTO_SRC` to override) and then **resolves every `<img src>`
+it just wrote; any dead reference fails the build.** Skipping that shipped 11
+broken images to production on 2026-07-15.
+
 ⚠️ **CSS namespace:** `site.css` owns `.fit` (the homepage two-column comparison
 grid). `curated.css` must not redefine it — doing so broke the live homepage on
 2026-07-15. The taste badge is `.taste-score`. Check before adding selectors:

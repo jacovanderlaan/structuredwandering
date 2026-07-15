@@ -120,7 +120,7 @@ def render_venue(v: dict) -> str:
     fit_html = ""
     try:
         if v.get("style_fit") not in (None, ""):
-            fit_html = (f'<span class="fit" title="taste-rubric score">'
+            fit_html = (f'<span class="taste-score" title="taste-rubric score">'
                         f'{round(float(v["style_fit"]))}</span>')
     except (TypeError, ValueError):
         fit_html = ""

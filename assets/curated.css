@@ -33,7 +33,9 @@
 .venue-img img { width: 150px; height: auto; border-radius: 8px; display: block; }
 .venue-body { flex: 1 1 auto; min-width: 0; }
 .venue-body h3 { margin: 0 0 .35rem; font-size: 1.05rem; }
-.fit { display: inline-block; margin-left: .5rem; padding: .05rem .45rem; border-radius: 999px;
+/* NB: do NOT name this .fit — site.css already uses .fit for the homepage
+   two-column comparison grid; reusing it there destroys that layout. */
+.taste-score { display: inline-block; margin-left: .5rem; padding: .05rem .45rem; border-radius: 999px;
   background: var(--accent); color: #fff; font-size: .72rem; font-weight: 700; vertical-align: middle; }
 .flags { margin: 0 0 .5rem; }
 .flag { display: inline-block; margin-right: .35rem; padding: .1rem .5rem; border-radius: 999px;

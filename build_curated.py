@@ -43,6 +43,7 @@ import os
 import re
 import json
 import html
+import shutil
 import argparse
 import unicodedata
 from pathlib import Path
@@ -54,6 +55,14 @@ HERE = Path(__file__).parent
 # The brain's export. Cross-repo artifact (ADR-085 phase 3 decides how it travels);
 # default looks for a local copy committed/dropped next to this builder.
 CONTENT_JSON = Path(os.environ.get("SW_CONTENT_JSON", str(HERE / "curated" / "content.json")))
+
+# The brain's images live in the travelbrain site's public/ folder and are referenced
+# by root-relative paths (/photos/...). They must be COPIED into this repo, or every
+# photo 404s in production (it did, 2026-07-15). Point this at travelbrain/site/public.
+PHOTO_SRC = Path(os.environ.get(
+    "SW_PHOTO_SRC",
+    str(HERE.parent / "travelbrain" / "site" / "public"),
+))
 
 # Only these statuses publish. 'draft' requires --draft (preview only).
 PUBLISH_STATUS = {"ready", "published"}
@@ -84,6 +93,59 @@ def is_complete(page: dict) -> tuple[bool, str]:
     if not page.get("header_image"):
         return False, "no header image"
     return True, ""
+
+
+def _page_image_paths(page: dict) -> list[str]:
+    """Every root-relative image path this page references."""
+    out = []
+    hdr = page.get("header_image") or {}
+    for key in ("url_full", "url_thumb"):
+        if str(hdr.get(key) or "").startswith("/"):
+            out.append(hdr[key])
+    for p in page.get("pois") or []:
+        if str(p.get("rep_photo") or "").startswith("/"):
+            out.append(p["rep_photo"])
+    for v in page.get("venues") or []:
+        im = v.get("image") or {}
+        for key in ("url_full", "url_thumb"):
+            if str(im.get(key) or "").startswith("/"):
+                out.append(im[key])
+    return sorted(set(out))
+
+
+def copy_photos(pages: list) -> tuple[int, list]:
+    """Copy every referenced /photos/... image from the brain's public dir into this
+    repo, so the paths actually resolve. Returns (copied, missing).
+
+    Without this the pages render with dead <img> tags — the brain's Astro site serves
+    them from its own public/, but this repo has to hold its own copy.
+    """
+    copied, missing = 0, []
+    for pg in pages:
+        for rel in _page_image_paths(pg):
+            src = PHOTO_SRC / rel.lstrip("/")
+            dest = HERE / rel.lstrip("/")
+            if not src.is_file():
+                missing.append(rel)
+                continue
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            if not dest.is_file() or src.stat().st_mtime > dest.stat().st_mtime:
+                shutil.copy2(src, dest)
+                copied += 1
+    return copied, missing
+
+
+def verify_images(slug: str) -> list:
+    """After writing a page, confirm every local <img src> actually resolves."""
+    page = (HERE / slug / "index.html").read_text(encoding="utf-8")
+    bad = []
+    for s in set(re.findall(r'src="([^"]+)"', page)):
+        if s.startswith(("http://", "https://", "data:")):
+            continue
+        target = (HERE / s.lstrip("/")) if s.startswith("/") else (HERE / slug / s)
+        if not target.resolve().is_file():
+            bad.append(s)
+    return sorted(bad)
 
 
 # --------------------------------------------------------------------------
@@ -311,7 +373,20 @@ def main() -> None:
         raise SystemExit("brain export has no pages")
 
     allowed = set(PUBLISH_STATUS) | ({"draft"} if args.draft else set())
+
+    # Copy the brain's photos in FIRST — the pages reference them by root-relative
+    # path, and without a local copy every <img> 404s (it did, live, 2026-07-15).
+    buildable = [p for p in pages if (p.get("status") or "").lower() in allowed]
+    n_copied, missing = copy_photos(buildable)
+    if n_copied:
+        print(f"  photos: copied {n_copied} from {PHOTO_SRC}")
+    if missing:
+        print(f"  ! {len(missing)} referenced photo(s) not found in {PHOTO_SRC}:")
+        for m in missing[:8]:
+            print(f"      {m}")
+
     built = held = 0
+    dead_total: list = []
     for pg in pages:
         status = (pg.get("status") or "").lower()
         if status not in allowed:
@@ -330,7 +405,10 @@ def main() -> None:
         subtitle = fm.get("subtitle") or f"Chosen, not found — {destination} for adults."
         canonical = f"{BASE_URL}/{slug}/"
         hdr = pg.get("header_image") or {}
+        # og:image must be ABSOLUTE — a root-relative path is ignored by scrapers.
         og = hdr.get("url_full") or ""
+        if og.startswith("/"):
+            og = f"{BASE_URL}{og}"
         venues_html = "\n".join(render_venue(v) for v in (pg.get("venues") or []))
 
         out_dir = HERE / slug
@@ -348,10 +426,20 @@ def main() -> None:
         n_v = len(pg.get("venues") or [])
         aff = sum(1 for v in pg.get("venues") or []
                   if (v.get("link") or {}).get("kind") == "affiliate")
-        print(f"  + {slug}/index.html  ({n_v} venues, {aff} affiliate link(s), status={status})")
+        # Never ship a page with dead images again — verify what we just wrote.
+        bad = verify_images(slug)
+        flag = f"  ⚠ {len(bad)} DEAD IMAGE(S): {', '.join(bad[:3])}" if bad else ""
+        print(f"  + {slug}/index.html  ({n_v} venues, {aff} affiliate link(s), status={status}){flag}")
+        if bad:
+            dead_total.extend(bad)
         built += 1
 
     print(f"built {built} destination(s)" + (f", held back {held}" if held else ""))
+    if dead_total:
+        raise SystemExit(
+            f"\nBUILD FAILED: {len(dead_total)} image reference(s) don't resolve. "
+            f"Copy them into {PHOTO_SRC} (or fix the brain's paths) and rebuild — "
+            f"a page with dead photos must not publish.")
 
 
 if __name__ == "__main__":

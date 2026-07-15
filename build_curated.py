@@ -115,9 +115,15 @@ def render_evidence(sources: list) -> str:
 
 
 def render_venue(v: dict) -> str:
-    fit = v.get("style_fit")
-    fit_html = (f'<span class="fit" title="taste-rubric score">{int(fit)}</span>'
-                if isinstance(fit, (int, float)) else "")
+    # style_fit arrives as a STRING from the export (DuckDB DECIMAL -> JSON string),
+    # so don't isinstance-check for a number — coerce, and drop only if truly absent.
+    fit_html = ""
+    try:
+        if v.get("style_fit") not in (None, ""):
+            fit_html = (f'<span class="fit" title="taste-rubric score">'
+                        f'{round(float(v["style_fit"]))}</span>')
+    except (TypeError, ValueError):
+        fit_html = ""
     flags = []
     if v.get("adults_only"):
         flags.append('<span class="flag">adults only</span>')

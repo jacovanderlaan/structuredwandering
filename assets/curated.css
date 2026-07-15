@@ -69,3 +69,14 @@
   .venue { flex-direction: column; }
   .venue-img, .venue-img img { width: 100%; }
 }
+
+/* "Live now" destination links on the homepage #curation section (ADR-085) */
+.live-now { margin-top: 2.6rem; padding-top: 1.8rem; border-top: 1px solid var(--line, #e2e8f0); }
+.live-now-title { font-size: 1.05rem; margin: 0 0 .3rem; }
+.dest-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: .9rem; margin-top: 1.1rem; }
+.dest { display: block; padding: 1rem 1.15rem; background: var(--surface); text-decoration: none;
+  border: 1px solid var(--line, #e2e8f0); border-radius: 12px; transition: border-color .15s; }
+.dest:hover { border-color: var(--accent); }
+.dest-name { display: block; font-weight: 700; color: var(--ink); margin-bottom: .2rem; }
+.dest-meta { display: block; font-size: .82rem; color: var(--ink-faint); }

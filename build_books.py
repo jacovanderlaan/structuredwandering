@@ -377,11 +377,30 @@ def privacy_gate(site: str) -> None:
     print(f"  privacy gate OK ({len(files)} book pages clean)")
 
 
+def prune_orphans(live_slugs: set) -> None:
+    """Delete published book pages whose source no longer passes the gate. The
+    generator writes but never used to clean up, so scaffold pages published under
+    an older (looser) gate lingered live. Only touches books/<slug>.html (never
+    index.html); git-tracked so any deletion is recoverable."""
+    removed = 0
+    for pg in OUT.glob("*.html"):
+        if pg.name == "index.html":
+            continue
+        if pg.stem not in live_slugs:
+            pg.unlink()
+            removed += 1
+    if removed:
+        print(f"  - pruned {removed} orphaned book page(s) no longer passing the gate")
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     slugs = discover_books()
     if not slugs:
         print("  (no books to publish — check status gate / allow-list)")
+        # Deliberately do NOT prune here: a zero-result gate is ambiguous (misconfig
+        # or wrong CWD), and prune-all would wipe every live page. Prune only runs
+        # after a successful build with a real cards set (below).
         return
     # Site of this builder = 'systems' (SBM). Gate before writing any HTML.
     privacy_gate("systems")
@@ -437,9 +456,11 @@ def main() -> None:
         ), encoding="utf-8")
         print(f"  + books/{slug}.html  ({'cover' if cover_file else 'no cover'})")
         cards.append({"slug": slug, "title": title, "authors": authors, "year": year,
-                      "cluster": cluster, "curated": curated, "stars": stars})
+                      "cluster": cluster, "curated": curated, "stars": stars,
+                      "cover": cover_file})
 
     write_library_index(cards)
+    prune_orphans({c["slug"] for c in cards})
 
 
 # Human-readable cluster labels (raw .title() mangles acronyms).
@@ -480,10 +501,19 @@ def write_library_index(cards: list) -> None:
         for c in rows:
             meta_bits = " · ".join(b for b in [c["authors"], str(c["year"]) if c["year"] else ""] if b)
             stars = f'<span class="book-rating">{c["stars"]}</span> ' if c["stars"] else ""
+            thumb = (
+                f'        <figure class="lib-thumb"><img loading="lazy" src="../assets/{c["cover"]}" '
+                f'alt="{html.escape(c["title"], quote=True)} cover"/></figure>\n'
+                if c.get("cover") else
+                '        <figure class="lib-thumb lib-thumb--none" aria-hidden="true"></figure>\n'
+            )
             cards_html.append(
                 f'      <a class="lib-card" href="{c["slug"]}.html">\n'
-                f'        <h3>{html.escape(c["title"])}</h3>\n'
-                f'        <p class="muted">{stars}{html.escape(meta_bits)}</p>\n'
+                f'{thumb}'
+                f'        <div class="lib-card-body">\n'
+                f'          <h3>{html.escape(c["title"])}</h3>\n'
+                f'          <p class="muted">{stars}{html.escape(meta_bits)}</p>\n'
+                f'        </div>\n'
                 f'      </a>'
             )
         title = cluster_label(cluster)

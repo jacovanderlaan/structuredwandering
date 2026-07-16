@@ -158,6 +158,9 @@
   figure figcaption{text-align:center;color:var(--ink-faint);font-size:.85rem;margin-top:.7rem}
   .hero-figure{margin:2.5rem auto 0;max-width:760px}
   .hero-figure img{width:100%;height:auto;border-radius:var(--radius);box-shadow:var(--shadow)}
+  /* text-rich hero infographic (3:2, many small labels) needs more width to stay legible */
+  .hero-figure-wide{max-width:1040px}
+  .hero-figure-wide figcaption{text-align:center;color:var(--ink-faint);font-size:.9rem;margin-top:.9rem;max-width:60ch;margin-left:auto;margin-right:auto}
 
   /* inline pipeline diagram */
   .pipe{display:flex;align-items:stretch;gap:0;justify-content:center;flex-wrap:wrap;margin:2.5rem 0 0}

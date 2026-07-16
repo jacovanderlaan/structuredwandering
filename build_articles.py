@@ -55,7 +55,7 @@ PRIVATE_SECTIONS = {"notes", "actions", "comments", "briefs"}
 ARTICLES = [
     # Add published article slugs (folder names under ARTICLES_ROOT) here,
     # one per line, as you write them. Empty = nothing publishes yet.
-    # e.g. "the-slow-route-through-portugal",
+    "how-we-decide-who-to-trust",
 ]
 
 CSS = "../assets/article.css"
@@ -827,10 +827,16 @@ def write_sitemap(cards: list) -> None:
     art_dates = {href: (d or "") for d, _t, _s, href, _f in cards}
     urls: list[tuple[str, str]] = []  # (relative path, lastmod)
 
-    # top-level + collection/section pages (no reliable date -> omit lastmod).
-    # Only list sections that actually exist on this site (extend as it grows).
-    for rel in ["", "writing/"]:
-        urls.append((rel, ""))
+    # Disk-driven (mirrors the SBM 2026-07-16 sitemap fix): every published
+    # index.html on disk gets a URL, so new sections (sources/, method/,
+    # destination pages, books/) can never silently drop out of the sitemap.
+    urls.append(("", ""))  # homepage
+    skip_dirs = {"assets", "css", "photos", "articles", "__pycache__", ".git", ".github"}
+    for idx in sorted(HERE.glob("*/index.html")):
+        section = idx.parent.name
+        if section in skip_dirs:
+            continue
+        urls.append((f"{section}/", ""))
 
     # published articles, sorted newest first
     for href in sorted(art_dates, key=lambda h: art_dates[h], reverse=True):

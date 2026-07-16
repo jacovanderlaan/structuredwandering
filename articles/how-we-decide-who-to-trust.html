@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>How We Decide Who to Trust — Structured Wandering</title>
+<meta name="description" content="Travel advice is a firehose. We turned ours into a database with a door policy."/>
+<meta name="author" content="Jaco van der Laan"/>
+<link rel="canonical" href="https://structuredwandering.com/articles/how-we-decide-who-to-trust.html"/>
+<meta property="og:title" content="How We Decide Who to Trust"/>
+<meta property="og:description" content="Travel advice is a firehose. We turned ours into a database with a door policy."/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://structuredwandering.com/articles/how-we-decide-who-to-trust.html"/>
+<meta property="og:site_name" content="Structured Wandering"/>
+<meta property="og:image" content="https://structuredwandering.com/assets/sw-og-card.svg"/>
+<meta property="article:author" content="Jaco van der Laan"/>
+<meta property="article:published_time" content="2026-07-15"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="How We Decide Who to Trust"/>
+<meta name="twitter:description" content="Travel advice is a firehose. We turned ours into a database with a door policy."/>
+<meta name="twitter:image" content="https://structuredwandering.com/assets/sw-og-card.svg"/>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon-180.png"/>
+<link rel="stylesheet" href="../assets/article.css"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How We Decide Who to Trust",
+  "description": "Travel advice is a firehose. We turned ours into a database with a door policy.",
+  "image": "https://structuredwandering.com/assets/sw-og-card.svg",
+  "author": {
+    "@type": "Person",
+    "name": "Jaco van der Laan",
+    "url": "https://jacovanderlaan.com",
+    "sameAs": [
+      "https://jacovanderlaan.com",
+      "https://www.linkedin.com/in/jacovanderlaan",
+      "https://medium.com/@jacovanderlaan"
+    ]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Structured Wandering",
+    "url": "https://structuredwandering.com"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://structuredwandering.com/articles/how-we-decide-who-to-trust.html"
+  },
+  "url": "https://structuredwandering.com/articles/how-we-decide-who-to-trust.html",
+  "datePublished": "2026-07-15",
+  "dateModified": "2026-07-15"
+}
+</script>
+<!-- Google Analytics (GA4) — shared property with jacovanderlaan.com -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-XXXXXXXXXX');
+</script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="../">Structure&nbsp;Beats&nbsp;<span>Magic</span></a>
+  <a class="back" href="../writing/">← All writing</a>
+</div></header>
+<main class="wrap article">
+  <p class="eyebrow">For knowledge workers</p>
+  <h1>How We Decide Who to Trust</h1>
+  <p class="subtitle">Travel advice is a firehose. We turned ours into a database with a door policy.</p>
+  <div class="byline">By Jaco van der Laan · 2026-07-15</div>
+  
+  <article>
+  <p>Try searching for a trip. Any trip. What comes back is a wall: SEO articles written for other SEO articles, "10 hidden gems" lists that are neither ten nor hidden, sponsored roundups, and newsletters that arrive daily whether or not anything happened. None of it is wrong, exactly. It's just not <em>for you</em>. A feed optimises for engagement, and engagement is what happens to you while you're trying to decide something else.</p>
+<p>We got tired of it. Not tired of travel — tired of the deciding. So we did what we do with every problem that keeps coming back: we stopped searching and started structuring.</p>
+<h2>Decide whose taste you trust before you need them</h2>
+<p>The move is simple to say and unusual to actually do: pick your sources <em>in advance</em>, when you're calm, not in the panicked week before you book. Not "bookmark some blogs" — actually decide. Whose taste has earned a vote in your trips? Who is merely loud?</p>
+<p>We call these our curated sources. Right now there are 36 of them fully documented, one by one, with a few more in the intake queue — the register keeps growing, but only through the door. They range from Dutch specialists — Voigt Travel for Nordic self-drive, Tiara Tours, SNP, Djoser, Riksja — to international operators like Audley, Nordic Visitor, Intrepid and Quark Expeditions, to pure editorial voices like Barts Boekje and Columbus Magazine. An operator and a magazine are very different animals, but for our purposes they do the same job: they emit recommendations, and we need to know how much weight each one gets. The ones that cleared the bar are public: <a href="/sources/">the sources we trust</a>.</p>
+<p>The important part isn't the list. It's that the list is <em>closed</em>. When a recommendation arrives from outside it, the default answer is no. That single rule kills most of the firehose on contact.</p>
+<h2>Give every source the same shape</h2>
+<p>A bookmark folder is where good intentions go to age. What made ours different is boring on purpose: every source gets the same structured note, with the same fields. Who is this source actually for (<code>audience_age_band</code>, <code>audience_style</code>, <code>typical_traveller</code>)? What do independent reviews say (<code>review_score</code>)? Is it in, out, or on trial (<code>curation_status</code>)? Are its offers commercially alive (<code>offer_signal</code>)? Plus the URL and tags.</p>
+<p>Once every source has the same shape, something shifts. It stops being a reading list and becomes a model — a small one, but a real one, and you can query it. We went one step further and extracted the actual trips: 827 of them, across 25 operators and 2 editorial sources, loaded into a local DuckDB database and scored against an explicit profile of what we like. The profile is ours and it stays ours; the point is that it's <em>written down</em>. A preference you haven't written down can't score anything. It can only nag.</p>
+<p>So when we ask "what's worth looking at for Sicily," we're not searching the internet. We're querying 827 trips from 27 voices we already vetted, ranked by a rubric we wrote ourselves. The feed never gets a vote.</p>
+<h2>Keep the rejections</h2>
+<p>Here's the part most people skip, and it's the spine of the whole thing.</p>
+<p>Of our 36 sources, 24 are active, 5 are candidates still on trial, and 7 are rejected. And we <em>keep</em> the seven. Each rejection is a note with a reason, sitting right next to the sources that made it in.</p>
+<p>Why keep them? Because a rejected source is a decision, not an absence. If it's merely missing, you'll re-discover it in eight months, spend an evening re-evaluating it, and maybe reach a different conclusion for no better reason than mood. If it's rejected <em>with a reason</em>, the work is done once. Future-you reads one line and moves on.</p>
+<p>There's an older name for this: via negativa. Knowing what you don't want is often more durable knowledge than knowing what you do. Tastes drift; anti-interests are surprisingly stable. Our reject pile is the most honest part of the model, because it's the part with no incentive to flatter anyone.</p>
+<h2>Sources are also shops</h2>
+<p>An operator is two things at once: an editorial voice and a commercial actor. These can fail independently, and a model that tracks only one will lie to you.</p>
+<p>That's what <code>offer_signal</code> is for. It watches the email side: are this operator's deals actually alive? Thirteen of our sources currently are. The rest carry values like <code>stale-2025-03</code>, <code>stale-2026-02</code>, <code>dead-2017</code>, <code>dead-2020</code>, <code>dead-2024</code> — the date the signal went quiet. A source can write beautifully about the Arctic and not have sent a live offer since 2017. Editorially excellent, commercially dead. The model says so out loud, so we don't have to remember it.</p>
+<p>This sounds like a small bookkeeping detail. It isn't. It's the difference between "I love this company" and "I love this company <em>and they can currently sell me something</em>." Only one of those helps you book a trip.</p>
+<h2>Write down how sure you are</h2>
+<p>Every field in the model records where its evidence came from, including when the evidence is thin. A typical review entry reads: "Trustpilot 4.4/5 over 983 reviews… numbers via search results/crawls, not primarily verified." We could have written "4.4 stars" and looked tidier. We wrote the honest version instead.</p>
+<p>This is not a disclaimer. It's a feature. A model that admits its weak spots is one you can keep trusting when it's wrong, because you know <em>which parts</em> were load-bearing and which were best-effort. Confidence is data too. Most recommendation systems hide theirs; ours is a column.</p>
+<h2>What this buys</h2>
+<p>The payoff is visible on our destination pages. Take <a href="/palermo">Palermo</a>: every pick shows its taste-rubric score, the evidence behind it, and — just as prominently — what got ruled out and why. Not "here are twelve places," but "here are the ones that survived, here's the scoring, here's what didn't make it." When you disagree with a pick, you can see exactly which assumption to argue with. Try doing that with a listicle.</p>
+<p>And deciding got <em>fast</em>. Not because we found a better search engine, but because most of the deciding happened months ago, in the structure. By the time a specific trip question shows up, the trusted voices are chosen, the untrusted ones are documented, the dead offers are flagged, and the scoring is written down. What's left is the fun part.</p>
+<h2>This was never really about travel</h2>
+<p>Swap the nouns and the method survives intact. Restaurants, tools, newsletters, investment commentary, parenting advice — any domain where recommendations arrive faster than you can evaluate them. The recipe is the same five moves: name your sources explicitly, give every one the same shape, score against a profile you've actually written down, keep the rejections with reasons, and record how sure you are. (The condensed version lives at <a href="/method/">how we curate</a>.)</p>
+<p>None of this needed AI to be clever, and that's rather the point. The AI helps us extract and score at volume — 827 trips is not an evening's hobby — but the intelligence lives in the structure: the fields, the gate, the reject pile, the honesty column. The tools just run fast inside it.</p>
+<p>We have a name for that principle, and a whole site about it: <a href="https://structurebeatsmagic.com">structure beats magic</a>. This is what it looks like when you point it at something you love.</p>
+<p>The best trips aren't found. They're chosen. So are the voices you let choose with you.</p>
+  </article>
+  <div class="article-cta">
+    <p class="formula-mini">Structure + Taste + Sources → Journeys worth taking</p>
+    <a class="btn" href="../writing/">← More writing</a>
+    <a class="btn btn-ghost" href="https://structurebeatsmagic.com">The method behind it →</a>
+  </div>
+</main>
+<footer><div class="wrap">Structured Wandering — deliberate travel by
+  <a href="https://jacovanderlaan.com">Jaco van der Laan</a></div></footer>
+</body></html>

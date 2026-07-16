@@ -151,14 +151,13 @@ destinations** (`/palermo` 7 venues · `/ortigia` 4 · `/cefalu` · `/agrigento`
 generated from the travelbrain brain and linked from the homepage's *Live now*
 block under `#curation`.
 
-🔴 **HTTPS is NOT working — and it's GitHub's side.** The Pages cert has been
-stuck at `state: new` since the CNAME went in on 12 Jul; re-adding the custom
-domain on 15 Jul re-triggered it and it stalled again at the same first step.
-Our side is verified clean: apex A-records → 185.199.108–111.153, `www` aliased,
-**no CAA record, no stale AAAA**, `CNAME` present locally and on the remote. HTTP
-serves 200; HTTPS fails `SEC_E_WRONG_PRINCIPAL`. Enforce-HTTPS **cannot** be
-enabled until the cert issues. GitHub's docs allow up to 24h — if it's still
-`new` after that, open a Support ticket citing both stalled requests.
+🟢 **HTTPS is live** (since 16 Jul). The cert sat stuck at `state: new` for four
+days (two provisioning attempts died at the same first step, our DNS verified
+clean throughout) — resolved via GitHub Support ticket #4575196: they nudged the
+stuck provisioning job, the cert issued, and Enforce-HTTPS is now ON (HTTP 301 →
+HTTPS, verified end-to-end). Lesson kept for next time: when a Pages cert stays
+`new` past 24h with clean DNS, skip the re-add loop and file the ticket — the
+Repositories category, since Pages has no category of its own.
 
 ⚪ **Not yet:** 0 articles published (first draft written: *"How We Decide Who to
 Trust"* — the curated-sources method as an SBM use case, in

@@ -82,19 +82,31 @@ def parse_register(md: str) -> tuple[list[dict], list[dict], str, str]:
                       "text": re.sub(r"\s+", " ", m.group(2)).strip()})
 
     # --- trusted sources, grouped by ### heading ---
+    # Each bullet: - **Name** — url: X — best_for: "…" — why: "…"
+    #   [— reviews: "…"] [— comfort: "…"]  (last two optional, any order)
+    def field(bullet: str, key: str) -> str:
+        m = re.search(rf'{key}:\s*"(.*?)"', bullet, re.S)
+        return re.sub(r"\s+", " ", m.group(1)).strip() if m else ""
+
     trusted = re.search(r"## Trusted sources.*?\n(.*?)(?=\n## |\Z)", md, re.S)
     groups: list[dict] = []
     if trusted:
         for gm in re.finditer(r"### (.+?)\n(.*?)(?=\n### |\Z)", trusted.group(1), re.S):
             sources = []
-            for sm in re.finditer(
-                    r"- \*\*(.+?)\*\*\s+—\s+url:\s*(\S+)\s+—\s+best_for:\s*\"(.*?)\"\s+—\s+why:\s*\"(.*?)\"",
+            for bm in re.finditer(
+                    r"- \*\*(.+?)\*\*\s+—\s+url:\s*(\S+)\s+—\s+(.*?)(?=\n- \*\*|\Z)",
                     gm.group(2), re.S):
+                rest = bm.group(3)
+                bf = field(rest, "best_for")
+                if not bf:  # a bullet without best_for isn't a source line
+                    continue
                 sources.append({
-                    "name": sm.group(1).strip(),
-                    "url": sm.group(2).strip(),
-                    "best_for": re.sub(r"\s+", " ", sm.group(3)).strip(),
-                    "why": re.sub(r"\s+", " ", sm.group(4)).strip(),
+                    "name": bm.group(1).strip(),
+                    "url": bm.group(2).strip().rstrip(".,"),
+                    "best_for": bf,
+                    "why": field(rest, "why"),
+                    "reviews": field(rest, "reviews"),
+                    "comfort": field(rest, "comfort"),
                 })
             if sources:
                 groups.append({"title": gm.group(1).strip(), "sources": sources})
@@ -134,7 +146,22 @@ PAGE = """<!doctype html>
 <meta name="twitter:title" content="{title}"/>
 <meta name="twitter:description" content="{description}"/>
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
-<link rel="stylesheet" href="../css/site.css"/>
+<link rel="stylesheet" href="../assets/site.css"/>
+<style>
+  .tight {{ padding: 2.5rem 0 3.5rem; }}
+  .source-card {{ border:1px solid var(--line,#e2e8f0); border-radius:12px;
+    padding:1.1rem 1.3rem; margin:0 0 1rem; background:#fff; }}
+  .source-card h3 {{ margin:0 0 .35rem; font-size:1.15rem; }}
+  .source-card h3 a {{ text-decoration:none; }}
+  .source-card h3 a:hover {{ text-decoration:underline; }}
+  .source-best {{ margin:.15rem 0; color:var(--ink-soft,#475569); font-size:.95rem; }}
+  .source-why {{ margin:.35rem 0; }}
+  .source-meta {{ margin:.25rem 0 0; font-size:.85rem; color:var(--ink-faint,#64748b); }}
+  .source-label {{ display:inline-block; min-width:4.2rem; font-weight:600;
+    color:var(--ink,#0f172a); text-transform:uppercase; letter-spacing:.03em;
+    font-size:.72rem; }}
+  .method-steps li {{ margin:0 0 .8rem; line-height:1.6; }}
+</style>
 </head>
 <body>
 <header class="site"><div class="wrap">
@@ -192,11 +219,19 @@ def render_sources(groups) -> str:
     for g in groups:
         body.append(f'<h2>{esc(g["title"])}</h2>')
         for s in g["sources"]:
+            meta_rows = ""
+            if s.get("reviews"):
+                meta_rows += (f'<p class="source-meta"><span class="source-label">Reviews</span> '
+                              f'{esc(s["reviews"])}</p>')
+            if s.get("comfort"):
+                meta_rows += (f'<p class="source-meta"><span class="source-label">Comfort</span> '
+                              f'{esc(s["comfort"])}</p>')
             body.append(
                 f'<div class="source-card">'
                 f'<h3><a href="{html.escape(s["url"], quote=True)}" rel="noopener">{esc(s["name"])}</a></h3>'
                 f'<p class="source-best"><strong>Best for:</strong> {esc(s["best_for"])}</p>'
                 f'<p class="source-why">{esc(s["why"])}</p>'
+                f'{meta_rows}'
                 f'</div>')
     # honest-links note (no affiliate mappings exist yet)
     body.append(paras(

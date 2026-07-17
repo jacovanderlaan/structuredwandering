@@ -161,6 +161,13 @@
   /* text-rich hero infographic (3:2, many small labels) needs more width to stay legible */
   .hero-figure-wide{max-width:1040px}
   .hero-figure-wide figcaption{text-align:center;color:var(--ink-faint);font-size:.9rem;margin-top:.9rem;max-width:60ch;margin-left:auto;margin-right:auto}
+  /* Crop the baked-in title off the top of a hero image (it duplicates the H1).
+     The SOURCE file keeps its title (good for Google Image SEO); only the DISPLAY
+     hides it. --crop-top = fraction of the image height to clip from the top. */
+  /* aspect-ratio = original (1536x1024=3:2) minus the cropped top band, so the
+     visible window shows only the diagram. object-position 100% pins to bottom. */
+  .fig-croptop{overflow:hidden;border-radius:var(--radius);box-shadow:var(--shadow);aspect-ratio:1536 / 835}
+  .fig-croptop img{display:block;width:100%;height:100%;object-fit:cover;object-position:center bottom;border-radius:0;box-shadow:none}
   /* ===== THE TRAVELLER: technique + result (added 2026-07-17) ===== */
   .traveller-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin:0 0 1.6rem}
   .tphoto{margin:0}

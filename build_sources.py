@@ -195,7 +195,10 @@ def render_method(steps, why, caveat) -> str:
     body.append('</ol>')
     body.append('<h2>The honest caveat</h2>')
     body.append(paras(caveat))
-    body.append('<p><a href="../sources/">See the sources this produced →</a></p>')
+    body.append('<p class="method-links">'
+                '<a href="../sources/">See the sources this produced →</a><br/>'
+                '<a href="../articles/how-we-decide-who-to-trust.html">Read the full story: How We Decide Who to Trust →</a>'
+                '</p>')
     return PAGE.format(
         title="How we curate",
         description="Why Structured Wandering curates its travel sources deliberately, and the four steps: collect, score, decide, revisit.",

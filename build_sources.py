@@ -81,6 +81,10 @@ def parse_register(md: str) -> tuple[list[dict], list[dict], str, str]:
         steps.append({"name": m.group(1).strip(),
                       "text": re.sub(r"\s+", " ", m.group(2)).strip()})
 
+    # --- analysis: the whole ## Analysis block, subheadings kept ---
+    am = re.search(r"## Analysis[^\n]*\n(.*?)(?=\n## )", md, re.S)
+    analysis_md = am.group(1).strip() if am else ""
+
     # --- trusted sources, grouped by ### heading ---
     # Each bullet: - **Name** — url: X — best_for: "…" — why: "…"
     #   [— reviews: "…"] [— comfort: "…"]  (last two optional, any order)
@@ -110,7 +114,7 @@ def parse_register(md: str) -> tuple[list[dict], list[dict], str, str]:
                 })
             if sources:
                 groups.append({"title": gm.group(1).strip(), "sources": sources})
-    return steps, groups, why, caveat
+    return steps, groups, why, caveat, analysis_md
 
 
 def esc(s: str) -> str:
@@ -188,6 +192,37 @@ PAGE = """<!doctype html>
 """
 
 
+def md_block(md: str) -> str:
+    """Render a markdown block that mixes ### headings and paragraphs."""
+    out = []
+    for chunk in re.split(r"\n\s*\n", md.strip()):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        if chunk.startswith("### "):
+            out.append(f"<h2>{esc(chunk[4:].strip())}</h2>")
+        else:
+            out.append(paras(chunk))
+    return "\n".join(out)
+
+
+def render_analysis(analysis_md: str) -> str:
+    body = [md_block(analysis_md)]
+    body.append('<p class="method-links">'
+                '<a href="../sources/">The sources themselves →</a><br/>'
+                '<a href="../method/">How we curate →</a>'
+                '</p>')
+    return PAGE.format(
+        title="What the register shows",
+        description="Patterns from reading a few dozen travel operators side by side: three worlds, price per day, comfort by travel model, season as a constraint, and why review scores need their denominator.",
+        canonical=f"{BASE_URL}/analysis/",
+        eyebrow="The analysis",
+        h1="What the register shows",
+        lead="Describe enough operators the same way and the market starts explaining itself.",
+        body="\n".join(body),
+    )
+
+
 def render_method(steps, why, caveat) -> str:
     body = ['<h2>Why we curate</h2>', paras(why), '<h2>The steps</h2>', '<ol class="method-steps">']
     for s in steps:
@@ -197,6 +232,7 @@ def render_method(steps, why, caveat) -> str:
     body.append(paras(caveat))
     body.append('<p class="method-links">'
                 '<a href="../sources/">See the sources this produced →</a><br/>'
+                '<a href="../analysis/">What the register shows →</a><br/>'
                 '<a href="../articles/how-we-decide-who-to-trust.html">Read the full story: How We Decide Who to Trust →</a>'
                 '</p>')
     return PAGE.format(
@@ -241,6 +277,9 @@ def render_sources(groups) -> str:
         "Every link above goes straight to the source's own site. No affiliate "
         "arrangements exist for any of them today; if that ever changes it will "
         "be disclosed here, per link."))
+    body.append('<p class="method-links">'
+                '<a href="../analysis/">What the register shows — patterns across all of them →</a>'
+                '</p>')
     return PAGE.format(
         title=f"Sources we trust ({total})",
         description="The travel operators, walking specialists and editorial guides that cleared Structured Wandering's curation bar — and why.",
@@ -273,7 +312,7 @@ def main() -> None:
             f"sources register is status:{status} — publish gate holds. "
             f"Flip to 'status: active' in {SRC.name}, or preview with --draft.")
 
-    steps, groups, why, caveat = parse_register(body)
+    steps, groups, why, caveat, analysis_md = parse_register(body)
     if not groups:
         raise SystemExit("no trusted sources parsed — check the bullet format in sources.md")
     if not steps:
@@ -282,6 +321,7 @@ def main() -> None:
     pages = {
         "method/index.html": render_method(steps, why, caveat),
         "sources/index.html": render_sources(groups),
+        **({"analysis/index.html": render_analysis(analysis_md)} if analysis_md else {}),
     }
     problems = privacy_check(pages)
     if problems:

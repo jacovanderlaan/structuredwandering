@@ -1,7 +1,4 @@
-# Structured Wandering — welcome all crawlers, including AI crawlers.
-# This is a discovery site; being indexed and cited is the goal. Privacy is
-# controlled by not publishing personal data, not by blocking bots.
+# ⚠️ TEMPORARILY BLOCKING INDEXING — not ready for search engines yet.
+# Restore robots.txt.golive when ready to go public.
 User-agent: *
-Allow: /
-
-Sitemap: https://structuredwandering.com/sitemap.xml
+Disallow: /

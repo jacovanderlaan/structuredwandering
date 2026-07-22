@@ -137,7 +137,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>{title} — Structured Wandering</title>
+
+<meta name="robots" content="noindex, nofollow" /><!-- TESTPHASE-NOINDEX: remove at go-live --><title>{title} — Structured Wandering</title>
 <meta name="description" content="{description}"/>
 <meta name="author" content="Jaco van der Laan"/>
 <link rel="canonical" href="{canonical}"/>

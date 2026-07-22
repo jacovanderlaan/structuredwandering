@@ -218,7 +218,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>{title} — Books — Structured Wandering</title>
+
+<meta name="robots" content="noindex, nofollow" /><!-- TESTPHASE-NOINDEX: remove at go-live --><title>{title} — Books — Structured Wandering</title>
 <meta name="description" content="{meta_desc}"/>
 <meta name="author" content="Jaco van der Laan"/>
 <link rel="canonical" href="{canonical}"/>
@@ -277,7 +278,8 @@ INDEX_PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My library — Structured Wandering</title>
+
+<meta name="robots" content="noindex, nofollow" /><!-- TESTPHASE-NOINDEX: remove at go-live --><title>My library — Structured Wandering</title>
 <meta name="description" content="The books behind the method — a curated shelf on knowledge, systems and thinking, each read through the Structure-Beats-Magic lens."/>
 <meta name="author" content="Jaco van der Laan"/>
 <link rel="canonical" href="{canonical}"/>

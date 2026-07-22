@@ -292,7 +292,8 @@ PAGE = """<!doctype html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>{title} — Structured Wandering</title>
+
+<meta name="robots" content="noindex, nofollow" /><!-- TESTPHASE-NOINDEX: remove at go-live --><title>{title} — Structured Wandering</title>
 <meta name="description" content="{subtitle}"/>
 <meta name="author" content="Jaco van der Laan"/>
 <link rel="canonical" href="{canonical}"/>
@@ -697,7 +698,8 @@ WRITING_INDEX = """<!doctype html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Writing · Structured Wandering</title>
+
+<meta name="robots" content="noindex, nofollow" /><!-- TESTPHASE-NOINDEX: remove at go-live --><title>Writing · Structured Wandering</title>
 <meta name="description" content="Practical pieces on structure, knowledge and AI — each takes one real, working system and shows the method behind it, so you can build your own."/>
 <meta name="author" content="Jaco van der Laan"/>
 <link rel="canonical" href="{canonical}"/>

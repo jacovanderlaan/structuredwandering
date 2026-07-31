@@ -68,7 +68,10 @@ export async function initBrowse(mount, opts = {}) {
     const out = apply(rows, state);
     // Hand the CURRENT filtered set to the detail page, so prev/next steps
     // through what the reader was actually looking at — not a global ordering.
-    lastSet = out.map((r) => ({ slug: r.slug, title: r.title, url: r.url }));
+    // only items WITH a page go into the stepper set: prev/next navigates by
+    // url, and a listing-only row would step the reader into a 404
+    lastSet = out.filter((r) => r.url)
+                 .map((r) => ({ slug: r.slug, title: r.title, url: r.url }));
     $(".bw-facets").innerHTML = facets(rows, state, scope);
     $(".bw-results").innerHTML = results(out, state, base, assets);
     $(".bw-count").textContent =
@@ -261,7 +264,11 @@ function results(out, s, base, assets) {
 }
 
 function item(r, view, base, assets) {
-  const href = base + r.url;
+  // ⚠️ A row without a url has no page of its own (ideas, skills, glossary
+  // terms, decisions live only in this listing). Render it as text — linking to
+  // a page that does not exist is a promise the site cannot keep, and it 404s.
+  const hasPage = Boolean(r.url);
+  const href = hasPage ? base + r.url : "";
   const img = r.hero_image
     ? `<img class="bw-img" src="${assets}${esc(r.hero_image)}" alt="" loading="lazy" />`
     : "";
@@ -271,17 +278,18 @@ function item(r, view, base, assets) {
     .filter(Boolean).map(esc).join(" · ");
 
   if (view === "grid") {
-    return `<a class="bw-cell" href="${href}">${img}
-      <strong>${esc(r.title)}</strong><span class="bw-chips">${chips}</span></a>`;
+    const inner = `${img}<strong>${esc(r.title)}</strong><span class="bw-chips">${chips}</span>`;
+    return hasPage ? `<a class="bw-cell" href="${href}">${inner}</a>`
+                   : `<div class="bw-cell bw-nolink">${inner}</div>`;
   }
   // list and cards share the shape jacovanderlaan.com uses: image beside the text
   return `<article class="bw-item">
     <div class="bw-body">
-      <h3><a href="${href}">${esc(r.title)}</a></h3>
+      <h3>${hasPage ? `<a href="${href}">${esc(r.title)}</a>` : esc(r.title)}</h3>
       <div class="bw-meta">${meta}</div>
       <div class="bw-chips">${chips}</div>
       <p>${esc(r.excerpt || "")}</p>
-      <a class="bw-more" href="${href}">Read more</a>
+      ${hasPage ? `<a class="bw-more" href="${href}">Read more</a>` : ""}
     </div>
     ${img}
   </article>`;

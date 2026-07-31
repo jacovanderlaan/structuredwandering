@@ -210,6 +210,44 @@ nav.main a.nav-cta{color:var(--accent);font-weight:600;margin-left:4px}
 .bw-off{visibility:hidden}
 .toc a.on{color:var(--accent);font-weight:600}
 @media(max-width:640px){.bw-stepper{font-size:.8rem;gap:8px}}
+
+/* listing header — eyebrow, a claim, a lede saying what the section is FOR.
+   Pattern from structurebeatsmagic /writing/: the header earns its space by
+   telling the reader why the list below matters, not by naming the page type. */
+.listing-head{padding-bottom:8px}
+.listing-head h1{max-width:16ch}
+.listing-head .lede{font-size:1.06rem;color:var(--muted);max-width:60ch;margin:.5em 0 0}
+@media(max-width:700px){.listing-head h1{max-width:none}}
+
+/* ---- document layout: content + sticky left TOC ----
+   ⚠️ This lived only in structureddiagrams/assets/site.css, so every other site
+   rendered detail.js's TOC ABOVE the article instead of beside it — the layout
+   existed, the CSS did not. Shared, and using theme variables rather than the
+   hardcoded greys it had locally. */
+.pagewrap{display:flex;gap:2.5rem;align-items:flex-start}
+.pagebody{flex:1;min-width:0}
+.pagebody h2,.pagebody h3{scroll-margin-top:1.5rem}
+.toc{position:sticky;top:1.5rem;width:210px;flex:0 0 210px;font-size:.9em}
+.toc-inner{border-left:2px solid var(--line);padding-left:.9rem}
+.toc-h{font-size:.75em;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--muted);margin-bottom:.5rem}
+.toc ul{list-style:none;padding:0;margin:0}
+.toc li{padding:.22rem 0;line-height:1.35}
+.toc li.l3{padding-left:.8rem;font-size:.94em}
+.toc a{color:var(--muted);text-decoration:none;display:block}
+.toc a:hover,.toc a.on{color:var(--accent)}
+/* always visible: revealing it on hover made it undiscoverable on touch */
+.toc-toggle{display:block;background:none;border:0;font-size:1.15rem;line-height:1;
+  color:var(--muted);cursor:pointer;padding:.15rem .3rem;margin-bottom:.5rem;border-radius:4px}
+.toc-toggle:hover{color:var(--accent);background:var(--accent-soft)}
+.toc-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+body.toc-off .toc-inner{display:none}
+body.toc-off .toc{width:auto;flex-basis:auto}
+html{scroll-behavior:smooth}
+@media(max-width:900px){.pagewrap{display:block}.toc{display:none}}
+/* a row with no page of its own — rendered, not linked */
+.bw-cell.bw-nolink{cursor:default}
+.bw-cell.bw-nolink:hover{border-color:var(--line)}
 /* === END shared tokens === */
 
 :root{

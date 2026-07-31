@@ -146,10 +146,11 @@ function fromHash(defaults) {
 /* ---- data ---------------------------------------------------------------- */
 
 async function loadRows(url) {
-  // ⚠️ Copied from structuredmetadata/browser.html, in production since June.
-  // duckdb.createWorker() does NOT exist in the 1.28 ESM build — using it threw,
-  // and the page silently fell back to the static list. The worker must be a
-  // Blob that importScripts() the bundle.
+  // ⚠️ Copied verbatim from structuredmetadata/browser.html, which has worked in
+  // production since June. Correction to an earlier note here: duckdb.createWorker
+  // DOES exist in the 1.28 ESM build — that was not the bug. The real failure was
+  // registerFileURL below. When a working implementation already exists in the
+  // repo, copy it instead of writing a second one from memory.
   const duckdb = await import(DUCKDB_CDN);
   const bundle = await duckdb.selectBundle(duckdb.getJsDelivrBundles());
   const workerUrl = URL.createObjectURL(new Blob(
@@ -160,8 +161,14 @@ async function loadRows(url) {
   URL.revokeObjectURL(workerUrl);
 
   const conn = await db.connect();
-  const abs = new URL(url, location.href).href;
-  await db.registerFileURL("content.parquet", abs, duckdb.DuckDBDataProtocol.HTTP, false);
+  // ⚠️ fetch + registerFileBuffer, NOT registerFileURL. The working
+  // implementation (structuredmetadata/browser.html, in production since June)
+  // fetches the bytes and hands them over; registerFileURL with the HTTP
+  // protocol handler failed silently here. Copy what works.
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`${resp.status} fetching ${url}`);
+  const buf = new Uint8Array(await resp.arrayBuffer());
+  await db.registerFileBuffer("content.parquet", buf);
   const res = await conn.query("SELECT * FROM read_parquet('content.parquet')");
   const rows = res.toArray().map((r) => JSON.parse(JSON.stringify(r)));
   await conn.close();

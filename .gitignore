@@ -4,3 +4,12 @@ __pycache__/
 
 # brain export artifact (ADR-085 phase 3 decides how it travels)
 curated/content.json
+# ADR-126: generators live in W:, not in the public site repo
+build_*.py
+*_pipeline.py
+concept_graph.py
+STYLEGUIDE.md
+DOMAIN.md
+**/IMAGE-CATALOG.md
+**/BRAND-ASSETS.md
+**/briefs.md

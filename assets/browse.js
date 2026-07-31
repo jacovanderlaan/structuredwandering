@@ -54,6 +54,16 @@ export async function initBrowse(mount, opts = {}) {
   el.innerHTML = shell();
   const $ = (s) => el.querySelector(s);
 
+  const wireFacets = () => {
+    el.querySelectorAll("[data-facet]").forEach((cb) => {
+      cb.onchange = () => {
+        const set = state[cb.dataset.facet];
+        cb.checked ? set.add(cb.value) : set.delete(cb.value);
+        render();
+      };
+    });
+  };
+
   const render = () => {
     const out = apply(rows, state);
     // Hand the CURRENT filtered set to the detail page, so prev/next steps
@@ -67,15 +77,6 @@ export async function initBrowse(mount, opts = {}) {
     history.replaceState(null, "", location.pathname + toHash(state));
   };
 
-  const wireFacets = () => {
-    el.querySelectorAll("[data-facet]").forEach((cb) => {
-      cb.onchange = () => {
-        const set = state[cb.dataset.facet];
-        cb.checked ? set.add(cb.value) : set.delete(cb.value);
-        render();
-      };
-    });
-  };
 
   // remember the set + the clicked position on the way out (detail.js reads it)
   el.addEventListener("click", (e) => {
@@ -103,7 +104,7 @@ export async function initBrowse(mount, opts = {}) {
     };
   });
   $(".bw-clear").onclick = () => {
-    state.q = ""; state.type.clear(); state.category.clear();
+    state.q = ""; state.type.clear(); state.category.clear(); state.topic.clear();
     $(".bw-search").value = ""; render();
   };
 
@@ -119,6 +120,7 @@ function toHash(s) {
   if (s.q) p.set("q", s.q);
   if (s.type.size) p.set("type", [...s.type].join("|"));
   if (s.category.size) p.set("cat", [...s.category].join("|"));
+  if (s.topic.size) p.set("topic", [...s.topic].join("|"));
   if (s.view !== "list") p.set("view", s.view);
   if (s.sort !== "title") p.set("sort", s.sort);
   const q = p.toString();
@@ -130,8 +132,12 @@ function fromHash(defaults) {
   const split = (v) => new Set(v ? v.split("|").filter(Boolean) : []);
   return {
     q: p.get("q") || "",
+    // ⚠️ Every FACET key must exist here as a Set. Adding "topic" to the facet
+    // list without adding it here made facets() read undefined.has() and the
+    // whole render threw — the chrome painted, the results never did.
     type: split(p.get("type")),
     category: split(p.get("cat")),
+    topic: split(p.get("topic")),
     view: p.get("view") || defaults.view || "list",
     sort: p.get("sort") || defaults.sort || "title",
   };
@@ -168,6 +174,7 @@ function apply(rows, s) {
   let out = rows.filter((r) => {
     if (s.type.size && !s.type.has(r.type)) return false;
     if (s.category.size && !s.category.has(r.category || "—")) return false;
+    if (s.topic.size && !s.topic.has(r.topic || "—")) return false;
     if (s.q) {
       const hay = `${r.title} ${r.excerpt} ${r.category} ${r.topic}`.toLowerCase();
       if (!hay.includes(s.q)) return false;
@@ -237,6 +244,8 @@ function facets(rows, s, scope = []) {
   // With a mixed scope (concepts + activities + anti-patterns) it still helps.
   const typeFacet = scope.length === 1 ? "" : group("type", "Type");
   return typeFacet + group("category", "Category") + group("topic", "Topic");
+  // group() already returns "" when a facet has no values, so an empty
+  // Topic section never renders.
 }
 
 function results(out, s, base, assets) {

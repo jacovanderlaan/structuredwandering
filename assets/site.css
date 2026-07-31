@@ -142,6 +142,74 @@ nav.main a.nav-cta{color:var(--accent);font-weight:600;margin-left:4px}
     border-radius:0;padding:0;min-width:0;max-width:none;background:transparent}
   .navmenu a{padding:.45rem 0 .45rem 1.1rem;font-size:.9rem}
 }
+
+
+/* ============================================================================
+   browse.css — faceted listing + view switcher. Shared; synced into each site.
+   Facets and image-beside-text follow jacovanderlaan.com; the view switcher and
+   card density follow the Beacon app.
+   ============================================================================ */
+.bw{display:flex;gap:28px;align-items:flex-start}
+.bw-side{flex:0 0 220px;position:sticky;top:76px;font-size:.9rem}
+.bw-side-h{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:.5rem}
+.bw-clear{background:none;border:0;color:var(--accent);cursor:pointer;font-size:.78rem;padding:0}
+.bw-search{width:100%;padding:.5rem .7rem;border:1px solid var(--line);border-radius:6px;
+  background:var(--surface);color:var(--fg);font:inherit;font-size:.88rem;margin-bottom:1rem}
+.bw-fgroup{margin-bottom:1.1rem}
+.bw-flabel{font-size:.74rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:.35rem}
+.bw-f{display:flex;align-items:center;gap:.5rem;padding:.22rem 0;cursor:pointer;line-height:1.3}
+.bw-f input{margin:0;flex:0 0 auto}
+.bw-f span:first-of-type{flex:1;min-width:0}
+.bw-n{color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums}
+.bw-main{flex:1;min-width:0}
+.bw-bar{display:flex;align-items:center;gap:12px;margin-bottom:1.1rem;
+  padding-bottom:.7rem;border-bottom:1px solid var(--line)}
+.bw-count{color:var(--muted);font-size:.86rem}
+.bw-spacer{flex:1}
+.bw-sort{border:1px solid var(--line);border-radius:6px;background:var(--surface);
+  color:var(--fg);font:inherit;font-size:.84rem;padding:.3rem .5rem}
+.bw-views{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.bw-views button{background:var(--surface);border:0;border-left:1px solid var(--line);
+  padding:.35rem .7rem;font:inherit;font-size:.82rem;color:var(--muted);cursor:pointer}
+.bw-views button:first-child{border-left:0}
+.bw-views button.on{background:var(--accent);color:#fff}
+/* list + cards: image beside the text (jacovanderlaan.com) */
+.bw-item{display:flex;gap:20px;align-items:flex-start;padding:1.1rem 0;border-bottom:1px solid var(--line)}
+.bw-body{flex:1;min-width:0}
+.bw-item h3{margin:0 0 .25rem;font-size:1.06rem;line-height:1.3}
+.bw-item p{margin:.45rem 0 .5rem;color:var(--muted);font-size:.92rem}
+.bw-img{flex:0 0 180px;width:180px;height:auto;border-radius:8px;border:1px solid var(--line)}
+.bw-meta{color:var(--muted);font-size:.8rem}
+.bw-chips{display:flex;flex-wrap:wrap;gap:.35rem;margin:.4rem 0}
+.bw-chip{font-size:.72rem;padding:.12em .55em;border-radius:4px;background:var(--surface2);color:var(--muted)}
+.bw-more{font-size:.86rem;font-weight:600}
+.bw-cards .bw-item{border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.9rem;background:var(--surface)}
+.bw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:14px}
+.bw-cell{display:block;border:1px solid var(--line);border-radius:10px;padding:.9rem;
+  background:var(--surface);color:var(--fg)}
+.bw-cell:hover{text-decoration:none;border-color:var(--accent)}
+.bw-cell .bw-img{width:100%;flex:none;margin-bottom:.5rem}
+.bw-loading,.bw-empty,.bw-err{color:var(--muted);padding:1.2rem 0}
+/* the static fallback is for crawlers and no-JS readers; hidden once JS runs */
+.bw-fallback{border-top:1px solid var(--line);margin-top:2rem;padding-top:1rem}
+.bw-ready .bw-fallback{display:none}
+@media(max-width:860px){
+  .bw{display:block}
+  .bw-side{position:static;width:auto;margin-bottom:1.4rem}
+  .bw-img{flex-basis:110px;width:110px}
+}
+/* prev/next stepper on a detail page — steps through the FILTERED set the
+   reader came from, with a route back to that same filtered view */
+.bw-stepper{display:flex;align-items:center;gap:14px;margin:0 0 1.4rem;
+  padding-bottom:.7rem;border-bottom:1px solid var(--line);font-size:.86rem}
+.bw-stepper a{color:var(--accent)}
+.bw-prev,.bw-next{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bw-next{text-align:right}
+.bw-pos{color:var(--muted);flex:0 0 auto;font-variant-numeric:tabular-nums}
+.bw-off{visibility:hidden}
+.toc a.on{color:var(--accent);font-weight:600}
+@media(max-width:640px){.bw-stepper{font-size:.8rem;gap:8px}}
 /* === END shared tokens === */
 
 :root{

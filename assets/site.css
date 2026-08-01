@@ -36,7 +36,20 @@
   --radius:    16px;
   --shadow:    0 10px 30px rgba(15,23,42,.07);
   --ink-soft:  #475569;   /* secondary text: nav, captions */
-  --ink-faint: #94a3b8;   /* tertiary: metadata, disabled */   /* payoff word ONLY — never a background */
+  --ink-faint: #94a3b8;   /* tertiary: metadata, disabled */
+
+  /* ---- type scale ----
+     From jacovanderlaan-site, which Jaco reads as the stronger-looking site.
+     Measured, the difference was real: its h1 tops out at 64px/6vw/800 where
+     BTM and SD sat at 49.6px/5vw with no extra weight — a quarter smaller.
+     Nothing typographic was shared before, so each site had invented its own
+     heading size and three had drifted apart. */
+  --h1:        clamp(40px, 6vw, 64px);
+  --h1-weight: 800;
+  --h1-track:  -1px;      /* tight tracking is what makes big type look set */
+  --h1-lead:   1.05;
+  --h2:        clamp(26px, 3.2vw, 36px);
+  --lede:      clamp(17px, 1.6vw, 20px);   /* payoff word ONLY — never a background */
 
   /* entity colours — the same three kinds of thing, app and sites alike */
   --e-action:   #2563eb;  /* activities: what the method DOES */
@@ -161,6 +174,18 @@ nav.main a.nav-cta:hover{
     border-radius:0;padding:0;min-width:0;max-width:none;background:transparent}
   .navmenu a{padding:.45rem 0 .45rem 1.1rem;font-size:.9rem}
 }
+
+
+/* ---- headings ----
+   Applied here so a site gets the family's type scale by syncing, rather than
+   by each one redeclaring an h1 and drifting. A site that wants a different
+   voice overrides --h1 etc. in its own stylesheet, not the rule. */
+h1,.hero h1{
+  font-size:var(--h1);font-weight:var(--h1-weight);
+  letter-spacing:var(--h1-track);line-height:var(--h1-lead);
+  text-wrap:balance}
+h2{font-size:var(--h2);line-height:1.15;letter-spacing:-.01em}
+.lede{font-size:var(--lede);line-height:1.55;color:var(--ink-soft)}
 
 
 /* ============================================================================
@@ -382,7 +407,7 @@ html{scroll-behavior:smooth}
   .hero{padding:6rem 0 4rem;text-align:center}
   .hero .eyebrow{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
   .eb-break{display:none} /* eyebrow line-breaks: hidden on desktop (one line), shown on mobile */
-  .hero h1{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.08;letter-spacing:-.02em;margin:1rem auto;max-width:14ch}
+  .hero h1{font-size:var(--h1);line-height:1.08;letter-spacing:-.02em;margin:1rem auto;max-width:14ch;font-weight:var(--h1-weight)}
   .hero .lede{font-size:1.25rem;color:var(--ink-soft);max-width:46ch;margin:0 auto 2rem}
   .formula{display:inline-block;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:1rem 1.5rem;border-radius:var(--radius);font-size:1.05rem;font-weight:600;letter-spacing:.01em;box-shadow:var(--shadow)}
   .formula .op{color:var(--ink-faint);margin:0 .3rem}
@@ -398,7 +423,7 @@ html{scroll-behavior:smooth}
        broke awkwardly. Tighten spacing + force 3 clean lines via .eb-break. */
     .hero .eyebrow{font-size:11px;letter-spacing:.08em;max-width:30ch;margin:0 auto;line-height:1.5}
     .eb-break{display:inline}
-    .hero h1{font-size:1.9rem;line-height:1.15;max-width:18ch}
+    .hero h1{font-size:1.9rem;line-height:1.15;max-width:18ch;font-weight:var(--h1-weight);letter-spacing:var(--h1-track)}
     .hero .lede{font-size:1.08rem;max-width:34ch}
     /* Formula is a light card everywhere (see base rule); on phones just shrink
        it so it fits and the operators wrap cleanly. */

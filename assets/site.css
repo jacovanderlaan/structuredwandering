@@ -28,7 +28,15 @@
   --accent:    #0d7d7d;   /* the one blue */
   --accent-dk: #0a5f5f;   /* pressed / hover-dark */
   --accent-soft:#0d7d7d14;/* tinted background wash */
-  --gold:      #b88a1b;   /* payoff word ONLY — never a background */
+  --gold:      #b88a1b;
+
+  /* shape + depth — from jacovanderlaan-site, which had these and the rest of
+     the family did not. A shared radius/shadow is what makes cards on five
+     different sites look like they came from one place. */
+  --radius:    16px;
+  --shadow:    0 10px 30px rgba(15,23,42,.07);
+  --ink-soft:  #475569;   /* secondary text: nav, captions */
+  --ink-faint: #94a3b8;   /* tertiary: metadata, disabled */   /* payoff word ONLY — never a background */
 
   /* entity colours — the same three kinds of thing, app and sites alike */
   --e-action:   #2563eb;  /* activities: what the method DOES */
@@ -119,9 +127,20 @@ nav.main > a:hover,
   color:var(--muted);white-space:nowrap}
 .navmenu a:hover{color:var(--accent);background:var(--bg);text-decoration:none}
 
-/* ---- the call to action ---- */
+/* ---- the call to action ----
+   Taken from jacovanderlaan-site (1 Aug 2026), which had the better version:
+   a filled pill reads as a button, where a coloured link reads as one more
+   nav item. Jaco: "de loop van jacovanderlaan vind ik juist erg mooi" - so
+   the borrowing runs that way round, not the other. */
 nav.main a.cta,
-nav.main a.nav-cta{color:var(--accent);font-weight:600;margin-left:4px}
+nav.main a.nav-cta{
+  margin-left:10px;padding:9px 18px;border-radius:999px;
+  background:var(--accent);color:#fff;font-weight:600;white-space:nowrap;
+  transition:background .15s ease,transform .15s ease}
+nav.main a.cta:hover,
+nav.main a.nav-cta:hover{
+  background:var(--accent-dk);color:#fff;text-decoration:none;
+  transform:translateY(-1px)}
 
 /* ---- narrow: shrink, never hide ---- */
 @media(max-width:1040px){

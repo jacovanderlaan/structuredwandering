@@ -251,11 +251,46 @@ html{scroll-behavior:smooth}
 
 /* listing hero — beside the header text, not above the page. The reader should
    reach the filter without scrolling past a full-width band. */
-.listing-head{display:flex;gap:2.5rem;align-items:center;flex-wrap:wrap}
-.listing-head-text{flex:1 1 22rem;min-width:0}
-.listing-hero{flex:0 1 380px;margin:0;min-width:0}
-.listing-hero img{width:100%;height:auto;display:block;border-radius:10px}
-@media(max-width:820px){.listing-hero{display:none}}
+/* ⚠️ The shared block is PREPENDED, so a site's own .hero rules load after it.
+   Match .hero.listing-head (two classes) so the layout wins on specificity
+   rather than on order — appending would repeat the ADR-128 mistake. */
+.hero.listing-head{display:flex;gap:2.5rem;align-items:center;flex-wrap:wrap;
+  padding-top:48px;padding-bottom:16px}
+.hero.listing-head .listing-head-text{flex:1 1 22rem;min-width:0}
+.hero.listing-head .listing-hero{flex:0 1 380px;margin:0;min-width:0;max-width:380px}
+.hero.listing-head .listing-hero img{width:100%;max-width:100%;height:auto;
+  display:block;border-radius:10px}
+@media(max-width:820px){.hero.listing-head .listing-hero{display:none}}
+
+/* the family page — the current site is marked, not linked */
+.family-cards .card.is-here{border-color:var(--accent);background:var(--accent-soft)}
+.fam-here{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--accent);background:var(--bg);border:1px solid var(--accent);
+  border-radius:999px;padding:.1em .6em;margin-left:.5em;vertical-align:middle}
+
+/* ---- timeline: the working record, newest first ---- */
+.tl{display:flex;gap:2.5rem;align-items:flex-start}
+.tl-side{flex:0 0 200px;position:sticky;top:76px;font-size:.9rem;max-height:80vh;overflow-y:auto}
+.tl-main{flex:1;min-width:0;border-left:2px solid var(--line);padding-left:1.6rem}
+.tl-entry{position:relative;padding:0 0 1.6rem}
+/* the dot on the spine — the sequence is the point, so make it visible */
+.tl-entry::before{content:"";position:absolute;left:-1.95rem;top:.45rem;width:9px;height:9px;
+  border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+.tl-entry[data-kind="note"]::before,
+.tl-entry[data-kind="observation"]::before{border-color:var(--muted)}
+.tl-meta{display:flex;gap:.6rem;align-items:baseline;font-size:.8rem;color:var(--muted)}
+.tl-kind{text-transform:uppercase;letter-spacing:.05em;font-size:.68rem;font-weight:600;
+  color:var(--accent);background:var(--accent-soft);padding:.1em .5em;border-radius:3px}
+.tl-entry h3{margin:.2rem 0 .3rem;font-size:1.02rem;line-height:1.35}
+.tl-entry p{margin:.25rem 0;font-size:.93rem;color:var(--muted)}
+.tl-source{font-style:italic}
+.tl-links{font-size:.85rem}
+@media(max-width:820px){
+  .tl{display:block}
+  .tl-side{position:static;max-height:none;margin-bottom:1.4rem}
+  .tl-main{border-left:0;padding-left:0}
+  .tl-entry::before{display:none}
+}
 /* === END shared tokens === */
 
 :root{

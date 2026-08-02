@@ -51,6 +51,7 @@ export async function initBrowse(mount, opts = {}) {
 
   const state = fromHash(opts.defaults || {});
   let lastSet = [];
+  let flagsOn = true;
   el.innerHTML = shell();
   const $ = (s) => el.querySelector(s);
 
@@ -72,8 +73,11 @@ export async function initBrowse(mount, opts = {}) {
     // url, and a listing-only row would step the reader into a 404
     lastSet = out.filter((r) => r.url)
                  .map((r) => ({ slug: r.slug, title: r.title, url: r.url }));
+    // Decide ONCE per render whether flags are meaningful for this set.
+    flagsOn = out.length > 2 &&
+      out.filter((r) => freshness(r)).length <= out.length * FRESH_MAX_SHARE;
     $(".bw-facets").innerHTML = facets(rows, state, scope);
-    $(".bw-results").innerHTML = results(out, state, base, assets);
+    $(".bw-results").innerHTML = results(out, state, base, assets, flagsOn);
     $(".bw-count").textContent =
       `${out.length} of ${rows.length}` + (out.length === 1 ? " item" : " items");
     wireFacets();
@@ -258,12 +262,45 @@ function facets(rows, s, scope = []) {
   // Topic section never renders.
 }
 
-function results(out, s, base, assets) {
+function results(out, s, base, assets, flagsOn) {
   if (!out.length) return `<p class="bw-empty">Nothing matches. <button class="bw-clear" type="button">Clear filters</button></p>`;
-  return `<div class="bw-${s.view}">` + out.map((r) => item(r, s.view, base, assets)).join("") + "</div>";
+  return `<div class="bw-${s.view}">` + out.map((r) => item(r, s.view, base, assets, flagsOn)).join("") + "</div>";
 }
 
-function item(r, view, base, assets) {
+// How recently something appeared or changed — "new" if it was added inside the
+// window, "updated" if it was only revised. Anything older gets nothing.
+//
+// ⚠️ The window is deliberately WIDE (60 days). This is a sabbatical, not a
+// news site: a rule written six weeks ago is still one of the newest things
+// here. A 7-day window would leave every page unbadged most of the time, which
+// is worse than no badge — it reads as "nothing is happening".
+//
+// ⚠️ And the badge must never be on everything. If a rebuild ever stamps all
+// items with today's date, every row lights up and the flag stops carrying
+// information. That is why this reads `created`/`updated` from the source
+// frontmatter and the git add date — not the file's mtime, which a sync resets.
+const FRESH_DAYS = 60;
+// ⚠️ Hard ceiling. Everything on a young page is new, so the window alone
+// badges every row — measured 30 of 30 the day this shipped, which is exactly
+// the failure the note above describes. If more than this share would be
+// flagged, the flag carries no information and none is shown.
+const FRESH_MAX_SHARE = 0.4;
+
+function freshness(r) {
+  const days = (d) => {
+    if (!d) return Infinity;
+    const t = Date.parse(String(d).slice(0, 10));
+    return isNaN(t) ? Infinity : (Date.now() - t) / 86400000;
+  };
+  const c = days(r.created), u = days(r.updated);
+  if (c <= FRESH_DAYS) return "new";
+  // Revised, but only worth flagging if the revision is meaningfully later than
+  // the creation — otherwise every item is "updated" on the day it is written.
+  if (u <= FRESH_DAYS && c - u > 1) return "updated";
+  return "";
+}
+
+function item(r, view, base, assets, flagsOn) {
   // ⚠️ A row without a url has no page of its own (ideas, skills, glossary
   // terms, decisions live only in this listing). Render it as text — linking to
   // a page that does not exist is a promise the site cannot keep, and it 404s.
@@ -274,18 +311,20 @@ function item(r, view, base, assets) {
     : "";
   const chips = [r.type, r.category].filter(Boolean)
     .map((c) => `<span class="bw-chip">${esc(c)}</span>`).join("");
+  const flag = flagsOn ? freshness(r) : "";
+  const badge = flag ? `<span class="bw-flag bw-flag-${flag}">${flag === "new" ? "New" : "Updated"}</span>` : "";
   const meta = [r.created, r.word_count ? `${Math.max(1, Math.round(r.word_count / 200))} min` : ""]
     .filter(Boolean).map(esc).join(" · ");
 
   if (view === "grid") {
-    const inner = `${img}<strong>${esc(r.title)}</strong><span class="bw-chips">${chips}</span>`;
+    const inner = `${img}<strong>${esc(r.title)}</strong><span class="bw-chips">${badge}${chips}</span>`;
     return hasPage ? `<a class="bw-cell" href="${href}">${inner}</a>`
                    : `<div class="bw-cell bw-nolink">${inner}</div>`;
   }
   // list and cards share the shape jacovanderlaan.com uses: image beside the text
   return `<article class="bw-item">
     <div class="bw-body">
-      <h3>${hasPage ? `<a href="${href}">${esc(r.title)}</a>` : esc(r.title)}</h3>
+      <h3>${hasPage ? `<a href="${href}">${esc(r.title)}</a>` : esc(r.title)}${badge}</h3>
       <div class="bw-meta">${meta}</div>
       <div class="bw-chips">${chips}</div>
       <p>${esc(r.excerpt || "")}</p>
